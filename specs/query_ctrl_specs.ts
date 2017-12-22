@@ -22,6 +22,10 @@ describe('AzureMonitorQueryCtrl', function() {
       expect(queryCtrl.target.queryType).to.be('Azure Monitor');
     });
 
+    it('should set default App Insights editor to be builder', function() {
+      expect(queryCtrl.target.appInsights.rawQuery).to.be(false);
+    });
+
     it('should set query parts to select', function() {
       expect(queryCtrl.target.azureMonitor.resourceGroup).to.be('select');
       expect(queryCtrl.target.azureMonitor.metricDefinition).to.be('select');
@@ -31,9 +35,9 @@ describe('AzureMonitorQueryCtrl', function() {
     });
   });
 
-  describe('and the query type is Azure Monitor', function() {
+  describe('when the query type is Azure Monitor', function() {
 
-    describe('when getOptions for the Resource Group dropdown is called', function() {
+    describe('and getOptions for the Resource Group dropdown is called', function() {
       const response = [
         {text: 'nodeapp', value: 'nodeapp'},
         {text: 'otherapp', value: 'otherapp'},
@@ -57,7 +61,7 @@ describe('AzureMonitorQueryCtrl', function() {
       });
     });
 
-    describe('when getOptions for the Metric Definition dropdown is called', function() {
+    describe('and getOptions for the Metric Definition dropdown is called', function() {
       describe('and resource group has a value', function() {
         const response = [
           {text: 'Microsoft.Compute/virtualMachines', value: 'Microsoft.Compute/virtualMachines'},
@@ -92,7 +96,7 @@ describe('AzureMonitorQueryCtrl', function() {
 
     });
 
-    describe('when getOptions for the ResourceNames dropdown is called', function() {
+    describe('and getOptions for the ResourceNames dropdown is called', function() {
       describe('and resourceGroup and metricDefinition have values', function() {
         const response = [
           {text: 'test1', value: 'test1'},
@@ -129,7 +133,7 @@ describe('AzureMonitorQueryCtrl', function() {
       });
     });
 
-    describe('when getOptions for the Metric Names dropdown is called', function() {
+    describe('and getOptions for the Metric Names dropdown is called', function() {
       describe('and resourceGroup, metricDefinition and resourceName have values', function() {
         const response = [
           {text: 'metric1', value: 'metric1'},

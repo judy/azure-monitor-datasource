@@ -16,8 +16,13 @@ export declare class AzureMonitorQueryCtrl extends QueryCtrl {
         };
         appInsights: {
             metricName: string;
+            rawQuery: boolean;
+            rawQueryString: string;
             groupBy: string;
             timeGrainType: string;
+            xaxis: string;
+            yaxis: string;
+            spliton: string;
         };
     };
     /** @ngInject **/
@@ -34,8 +39,11 @@ export declare class AzureMonitorQueryCtrl extends QueryCtrl {
     getAutoInterval(): any;
     getAppInsightsAutoInterval(): any;
     getAppInsightsMetricNames(): any;
+    getAppInsightsColumns(): any;
+    onAppInsightsColumnChange(): void;
     onAppInsightsMetricNameChange(): any;
     getAppInsightsGroupBySegments(query: any): any;
     resetAppInsightsGroupBy(): void;
     updateTimeGrainType(): void;
+    toggleEditorMode(): void;
 }

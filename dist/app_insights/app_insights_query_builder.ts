@@ -2,6 +2,7 @@
 
 import _ from 'lodash';
 import AppInsightsQuerystringBuilder from './app_insights_querystring_builder';
+import AppInsightsRawQuerystringBuilder from './app_insights_rawquerystring_builder';
 import ResponseParser from './response_parser';
 
 export default class AppInsightsQueryBuilder {
@@ -14,7 +15,7 @@ export default class AppInsightsQueryBuilder {
   constructor(instanceSettings, private backendSrv, private templateSrv, private $q) {
     this.id = instanceSettings.id;
     this.applicationId = instanceSettings.jsonData.appInsightsAppId;
-    this.baseUrl = `/appinsights/${this.version}/apps/${this.applicationId}/metrics`;
+    this.baseUrl = `/appinsights/${this.version}/apps/${this.applicationId}`;
     this.url = instanceSettings.url;
   }
 
@@ -27,38 +28,60 @@ export default class AppInsightsQueryBuilder {
       return item.hide !== true;
     }).map(target => {
       const item = target.appInsights;
-      const querystringBuilder = new AppInsightsQuerystringBuilder(
-        options.range.from,
-        options.range.to,
-        options.interval
-      );
+      if (item.rawQuery) {
+        const querystringBuilder = new AppInsightsRawQuerystringBuilder(item.rawQueryString);
+        const url = `${this.baseUrl}/query?${querystringBuilder.generate()}`;
 
-      if (item.groupBy !== 'none') {
-        querystringBuilder.setGroupBy(item.groupBy);
+        return {
+          refId: target.refId,
+          intervalMs: options.intervalMs,
+          maxDataPoints: options.maxDataPoints,
+          datasourceId: this.id,
+          url: url,
+          format: options.format,
+          alias: item.alias,
+          xaxis: item.xaxis,
+          yaxis: item.yaxis,
+          spliton: item.spliton,
+          raw: true
+        };
+      } else {
+        const querystringBuilder = new AppInsightsQuerystringBuilder(
+          options.range.from,
+          options.range.to,
+          options.interval
+        );
+
+        if (item.groupBy !== 'none') {
+          querystringBuilder.setGroupBy(item.groupBy);
+        }
+        querystringBuilder.setAggregation(item.aggregation);
+        querystringBuilder.setInterval(item.timeGrainType, this.templateSrv.replace(item.timeGrain, options.scopedVars), item.timeGrainUnit);
+
+        const url = `${this.baseUrl}/metrics/${this.templateSrv.replace(item.metricName, options.scopedVars)}?${querystringBuilder.generate()}`;
+
+        return {
+          refId: target.refId,
+          intervalMs: options.intervalMs,
+          maxDataPoints: options.maxDataPoints,
+          datasourceId: this.id,
+          url: url,
+          format: options.format,
+          alias: item.alias,
+          xaxis: '',
+          yaxis: '',
+          spliton: '',
+          raw: false
+        };
       }
-      querystringBuilder.setAggregation(item.aggregation);
-      querystringBuilder.setInterval(item.timeGrainType, this.templateSrv.replace(item.timeGrain, options.scopedVars), item.timeGrainUnit);
 
-      const url = `${this.baseUrl}/${this.templateSrv.replace(item.metricName, options.scopedVars)}?${querystringBuilder.generate()}`;
-
-      return {
-        refId: target.refId,
-        intervalMs: options.intervalMs,
-        maxDataPoints: options.maxDataPoints,
-        datasourceId: this.id,
-        url: url,
-        format: options.format,
-        alias: item.alias
-      };
     });
 
     if (queries.length === 0) {
       return this.$q.when({data: []});
     }
 
-    const promises = this.doQueries(queries);
-
-    return this.$q.all(promises).then(results => {
+    return this.$q.all(this.doQueries(queries)).then(results => {
       return new ResponseParser(results).parseQueryResult();
     });
   }
@@ -123,12 +146,12 @@ export default class AppInsightsQueryBuilder {
   }
 
   getMetricNames() {
-    const url = `${this.baseUrl}/metadata`;
+    const url = `${this.baseUrl}/metrics/metadata`;
     return this.doRequest(url).then(ResponseParser.parseMetricNames);
   }
 
   getMetricMetadata(metricName: string) {
-    const url = `${this.baseUrl}/metadata`;
+    const url = `${this.baseUrl}/metrics/metadata`;
     return this.doRequest(url).then(result => {
       return ResponseParser.parseMetadata(result, metricName);
     });

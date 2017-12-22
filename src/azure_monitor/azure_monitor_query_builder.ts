@@ -101,7 +101,8 @@ export default class AzureMonitorQueryBuilder {
         datasourceId: this.id,
         url: url,
         format: options.format,
-        alias: item.alias
+        alias: item.alias,
+        raw: false
       };
     });
 

@@ -90,7 +90,8 @@ System.register(['lodash', './azure_monitor_filter_builder', './url_builder', '.
                             datasourceId: _this.id,
                             url: url,
                             format: options.format,
-                            alias: item.alias
+                            alias: item.alias,
+                            raw: false
                         };
                     });
                     if (queries.length === 0) {
