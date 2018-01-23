@@ -12,6 +12,7 @@ export default class AppInsightsRawQuerystringBuilder {
     var timeFilter = this.getTimeFilter(this.options);
     queryString = queryString.replace('$__interval', this.options.interval)
     queryString = queryString.replace('$timeFilter', timeFilter);
+    queryString = encodeURI(queryString);
     let uriString = `query=${queryString}`;
 
     return uriString;
@@ -25,6 +26,6 @@ export default class AppInsightsRawQuerystringBuilder {
       return `timestamp >= datetime(${from.toISOString()})`;
     }
 
-    return `timestamp >= datetime(${from.toISOString()}) AND timestamp <= datetime(${until.toISOString()})`;
+    return `timestamp >= datetime(${from.toISOString()}) and timestamp <= datetime(${until.toISOString()})`;
   }
 }

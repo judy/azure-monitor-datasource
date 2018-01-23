@@ -14,6 +14,7 @@ System.register([], function(exports_1) {
                     var timeFilter = this.getTimeFilter(this.options);
                     queryString = queryString.replace('$__interval', this.options.interval);
                     queryString = queryString.replace('$timeFilter', timeFilter);
+                    queryString = encodeURI(queryString);
                     var uriString = "query=" + queryString;
                     return uriString;
                 };
@@ -23,7 +24,7 @@ System.register([], function(exports_1) {
                     if (options.rangeRaw.to === 'now') {
                         return "timestamp >= datetime(" + from.toISOString() + ")";
                     }
-                    return "timestamp >= datetime(" + from.toISOString() + ") AND timestamp <= datetime(" + until.toISOString() + ")";
+                    return "timestamp >= datetime(" + from.toISOString() + ") and timestamp <= datetime(" + until.toISOString() + ")";
                 };
                 return AppInsightsRawQuerystringBuilder;
             })();
