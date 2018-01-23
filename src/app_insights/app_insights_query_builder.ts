@@ -29,7 +29,7 @@ export default class AppInsightsQueryBuilder {
     }).map(target => {
       const item = target.appInsights;
       if (item.rawQuery) {
-        const querystringBuilder = new AppInsightsRawQuerystringBuilder(item.rawQueryString);
+        const querystringBuilder = new AppInsightsRawQuerystringBuilder(item.rawQueryString, options);
         const url = `${this.baseUrl}/query?${querystringBuilder.generate()}`;
 
         return {

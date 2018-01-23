@@ -5,12 +5,25 @@ System.register([], function(exports_1) {
         setters:[],
         execute: function() {
             AppInsightsRawQuerystringBuilder = (function () {
-                function AppInsightsRawQuerystringBuilder(rawQueryString) {
+                function AppInsightsRawQuerystringBuilder(rawQueryString, options) {
                     this.rawQueryString = rawQueryString;
+                    this.options = options;
                 }
                 AppInsightsRawQuerystringBuilder.prototype.generate = function () {
-                    var querystring = "query=" + this.rawQueryString;
-                    return querystring;
+                    var queryString = this.rawQueryString;
+                    var timeFilter = this.getTimeFilter(this.options);
+                    queryString = queryString.replace('$__interval', this.options.interval);
+                    queryString = queryString.replace('$timeFilter', timeFilter);
+                    var uriString = "query=" + queryString;
+                    return uriString;
+                };
+                AppInsightsRawQuerystringBuilder.prototype.getTimeFilter = function (options) {
+                    var from = options.range.from;
+                    var until = options.range.to;
+                    if (options.rangeRaw.to === 'now') {
+                        return "timestamp >= datetime(" + from.toISOString() + ")";
+                    }
+                    return "timestamp >= datetime(" + from.toISOString() + ") AND timestamp <= datetime(" + until.toISOString() + ")";
                 };
                 return AppInsightsRawQuerystringBuilder;
             })();
