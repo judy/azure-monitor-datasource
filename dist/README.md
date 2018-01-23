@@ -10,6 +10,7 @@ The Azure Monitor Data Source plugin supports both Azure Monitor and Application
   - includes support for the latest API version that allows multi-dimensional filtering for the Storage and SQL metrics.
   - Automatic time grain mode which will group the metrics by the most appropriate time grain value depending on whether you have zoomed in to look at fine-grained metrics or zoomed out to look at an overview.
 - Application Insights metrics
+  - Write raw [log analytics queries](https://docs.loganalytics.io/docs/Language-Reference), and select x-axis, y-axis, and grouped values manually.
   - Automatic time grain support
 - You can combine metrics from both services in the same graph.
 
