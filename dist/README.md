@@ -101,6 +101,19 @@ The plugin can access metrics from both the Azure Monitor service and the Applic
 8. Test that the configuration details are correct by clicking on the "Save & Test" button:
     ![Azure Monitor API Details](https://raw.githubusercontent.com/grafana/azure-monitor-datasource/master/src/img/config_4_save_and_test.png)
 
+### Writing Analytics Queries
+
+If you change the service type to "Application Insights", the menu icon to the right adds another option, "Toggle Edit Mode". Once clicked, the query edit mode changes to give you a full text area in which to write log analytics queries. (This is identical to how the InfluxDB datasource lets you write raw queries.)
+
+Once a query is written, the column names are automatically parsed out of the response data. You can then select them in the "X-axis", "Y-axis", and "Split On" dropdown menus, or just type them out.
+
+There are some important caveats to remember:
+
+- You'll want to order your y-axis in the query, eg. `order by timestamp asc`. The graph may come out looking bizarre otherwise. It's better to have Microsoft sort it on their side where it's faster, than to implement this in the plugin.
+- If you copy a log analytics query, typically they'll end with a render instruction, like `render barchart`. This is unnecessary, but harmless.
+- Currently, two default dashboard variables are supported: `$timeFilter` and `$__interval`. If you're searching in timestamped data, replace the beginning of your where clause to `where $timeFilter`. Dashboard changes by time region are handled as you'd expect, as long as you leave the name of the `timestamp` column alone. Likewise, `$__interval` will automatically change based on the dashboard's time region _and_ the width of the chart being displayed. Use it in bins, so `bin(timestamp,$__interval)` changes into something like `bin(timestamp,1s)`.
+- Templated dashboard variables are not yet supported! They will come in a future version.
+
 ### Formatting Legend Keys with Aliases
 
 The default legend formatting for the Azure Monitor API is:
