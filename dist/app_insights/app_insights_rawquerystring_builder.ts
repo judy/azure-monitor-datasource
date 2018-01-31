@@ -12,7 +12,7 @@ export default class AppInsightsRawQuerystringBuilder {
     var timeFilter = this.getTimeFilter(this.options);
     queryString = queryString.replace('$__interval', this.options.interval)
     queryString = queryString.replace('$timeFilter', timeFilter);
-    queryString = encodeURI(queryString);
+    queryString = encodeURIComponent(queryString);
     let uriString = `query=${queryString}`;
 
     return uriString;
