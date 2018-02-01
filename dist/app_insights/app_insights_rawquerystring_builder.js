@@ -12,8 +12,8 @@ System.register([], function(exports_1) {
                 AppInsightsRawQuerystringBuilder.prototype.generate = function () {
                     var queryString = this.rawQueryString;
                     var timeFilter = this.getTimeFilter(this.options);
-                    queryString = queryString.replace('$__interval', this.options.interval);
-                    queryString = queryString.replace('$timeFilter', timeFilter);
+                    queryString = queryString.replace(/\$__interval/gi, this.options.interval);
+                    queryString = queryString.replace(/\$timeFilter/gi, timeFilter);
                     queryString = encodeURIComponent(queryString);
                     var uriString = "query=" + queryString;
                     return uriString;
