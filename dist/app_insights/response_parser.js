@@ -21,12 +21,12 @@ System.register(['moment', 'lodash'], function(exports_1) {
                     for (var i = 0; i < this.results.length; i++) {
                         if (this.results[i].query.raw) {
                             var xaxis = this.results[i].query.xaxis;
-                            var yaxis = this.results[i].query.yaxis;
+                            var yaxises = this.results[i].query.yaxis;
                             var spliton = this.results[i].query.spliton;
                             columns = this.results[i].result.data.Tables[0].Columns;
                             var rows = this.results[i].result.data.Tables[0].Rows;
                             var alias = this.results[i].query.alias;
-                            data = lodash_1.default.concat(data, this.parseRawQueryResultRow(columns, rows, alias, xaxis, yaxis, spliton));
+                            data = lodash_1.default.concat(data, this.parseRawQueryResultRow(columns, rows, alias, xaxis, yaxises, spliton));
                         }
                         else {
                             var value = this.results[i].result.data.value;
@@ -37,17 +37,22 @@ System.register(['moment', 'lodash'], function(exports_1) {
                     var columns_for_dropdowns = lodash_1.default.map(columns, function (column) { return { text: column.ColumnName, value: column.ColumnName }; });
                     return { data: data, columns: columns_for_dropdowns };
                 };
-                ResponseParser.prototype.parseRawQueryResultRow = function (columns, rows, alias, xaxis, yaxis, spliton) {
+                ResponseParser.prototype.parseRawQueryResultRow = function (columns, rows, alias, xaxis, yaxises, spliton) {
                     var data = [];
                     var xaxis_column = columns.findIndex(function (column) { return column.ColumnName === xaxis; });
-                    var yaxis_column = columns.findIndex(function (column) { return column.ColumnName === yaxis; });
+                    var yaxises_split = yaxises.split(',');
+                    var yaxis_columns = {};
+                    lodash_1.default.forEach(yaxises_split, function (yaxis) {
+                        yaxis_columns[yaxis] = columns.findIndex(function (column) { return column.ColumnName === yaxis; });
+                    });
                     var spliton_column = columns.findIndex(function (column) { return column.ColumnName === spliton; });
                     var convert_timestamp = xaxis === "timestamp";
-                    // Set columns here somehow, so they can be accessed by the dropdowns.
                     lodash_1.default.forEach(rows, function (row) {
-                        var bucket = spliton_column === -1 ? ResponseParser.findOrCreateBucket(data, yaxis) : ResponseParser.findOrCreateBucket(data, row[spliton_column]);
-                        var epoch = convert_timestamp ? ResponseParser.dateTimeToEpoch(row[xaxis_column]) : row[xaxis_column];
-                        bucket.datapoints.push([row[yaxis_column], epoch]);
+                        lodash_1.default.forEach(yaxis_columns, function (yaxis_column, yaxis_name) {
+                            var bucket = spliton_column === -1 ? ResponseParser.findOrCreateBucket(data, yaxis_name) : ResponseParser.findOrCreateBucket(data, row[spliton_column]);
+                            var epoch = convert_timestamp ? ResponseParser.dateTimeToEpoch(row[xaxis_column]) : row[xaxis_column];
+                            bucket.datapoints.push([row[yaxis_column], epoch]);
+                        });
                     });
                     return data;
                 };

@@ -7,7 +7,7 @@ export default class ResponseParser {
         data: any[];
         columns: any;
     };
-    parseRawQueryResultRow(columns: any, rows: any, alias: string, xaxis: string, yaxis: string, spliton: string): any[];
+    parseRawQueryResultRow(columns: any, rows: any, alias: string, xaxis: string, yaxises: string, spliton: string): any[];
     parseQueryResultRow(value: any, alias: string): any[];
     getTargetName(segment: any, alias: string): string;
     static isSingleValue(value: any): boolean;
